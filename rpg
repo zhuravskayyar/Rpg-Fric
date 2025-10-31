@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор гібрида Wasteland Crossing</title>
+    <style>
+        :root {
+            --primary: #ff6b35;
+            --secondary: #4ecdc4;
+            --dark: #292f36;
+            --light: #f7fff7;
+            --accent: #ff9f1c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            background-image: linear-gradient(rgba(41, 47, 54, 0.9), rgba(41, 47, 54, 0.9)), 
+                              url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23292f36"/><path d="M0 0L100 100M100 0L0 100" stroke="%23343e46" stroke-width="1"/></svg>');
+        }
+        
+        h1 {
+            color: var(--accent);
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        h2 {
+            color: var(--secondary);
+            margin-top: 25px;
+            border-left: 3px solid var(--primary);
+            padding-left: 10px;
+        }
+        
+        .container {
+            background-color: rgba(52, 62, 70, 0.8);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            border: 1px solid #3d4a52;
+            margin-bottom: 20px;
+        }
+        
+        .character-card {
+            background: linear-gradient(145deg, #384047, #2d353b);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #4a565c;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        button {
+            background: linear-gradient(to bottom, var(--primary), #e55a2b);
+            color: var(--light);
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            display: block;
+            margin: 25px auto;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.4);
+            background: linear-gradient(to bottom, #ff7c4a, var(--primary));
+        }
+        
+        .skill-info {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: rgba(255, 107, 53, 0.1);
+            border-radius: 5px;
+            font-size: 14px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .highlight {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .bio-prosthetic {
+            color: var(--secondary);
+            font-style: italic;
+        }
+        
+        .character-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .character-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 36px;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .character-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--light);
+        }
+        
+        .character-mutation {
+            font-size: 18px;
+            color: var(--secondary);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #8a9ba8;
+        }
+        
+        .prompt-box {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid var(--primary);
+        }
+        
+        .prompt-text {
+            font-family: monospace;
+            white-space: pre-wrap;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(to bottom, var(--secondary), #3bb5ac);
+            padding: 8px 16px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        .hybrid-description {
+            font-style: italic;
+            color: #c8d3d2;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        
+        .abilities-list {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .abilities-list li {
+            margin-bottom: 5px;
+        }
+        
+        .hybrid-type {
+            display: inline-block;
+            padding: 3px 8px;
+            background: var(--primary);
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Генератор гібрида Wasteland Crossing</h1>
+        
+        <div class="character-card" id="characterCard">
+            <p>Натисніть кнопку, щоб створити випадкового гібрида!</p>
+        </div>
+        
+        <button onclick="generateCharacter()">Згенерувати нового гібрида</button>
+        
+        <div class="skill-info">
+            <p><span class="highlight">Вища цифра</span> = кращі навички <span class="highlight">ВИНАХІДЛИВОСТІ</span> (ремонт техніки, торгівля, пошук ресурсів)</p>
+            <p><span class="highlight">Нижча цифра</span> = кращі <span class="highlight">ФІЗИЧНІ НАВИЧКИ</span> (сила, витривалість, полювання)</p>
+        </div>
+    </div>
+
+    <div class="container" id="promptContainer" style="display: none;">
+        <h2>Промпт для генерації зображення</h2>
+        <div class="prompt-box">
+            <p>Скопіюйте цей текст для створення зображення у AI-генераторі:</p>
+            <div class="prompt-text" id="imagePrompt"></div>
+            <button class="copy-btn" onclick="copyPrompt()">Копіювати промпт</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        Wasteland Crossing RPG • Постапокаліптичний сеттінг з гібридами тварин
+    </div>
+
+    <script>
+        // База данных животных с характеристиками
+        const animals = {
+            "Вовк": {
+                traits: ["вовче вуха", "гострі ікла", "пухнастий хвіст", "зграйний інстинкт"],
+                abilities: ["чуткий нюх", "витривалість", "полювання в зграї"],
+                size: "medium",
+                type: "ссавець",
+                habitat: "ліс",
+                avatar: "🐺"
+            },
+            "Ведмідь": {
+                traits: ["ведмежа шерсть", "потужні лапи", "великі кігті", "масивна статура"],
+                abilities: ["неймовірна сила", "ритокладність", "вміння лазити по деревах"],
+                size: "large",
+                type: "ссавець", 
+                habitat: "ліс",
+                avatar: "🐻"
+            },
+            "Лисиця": {
+                traits: ["гострий ніс", "руде хутро", "пухнастий хвіст", "хитрі очі"],
+                abilities: ["спритність", "маскування", "норне житло"],
+                size: "small",
+                type: "ссавець",
+                habitat: "ліс",
+                avatar: "🦊"
+            },
+            "Рись": {
+                traits: ["китиці на вухах", "короткий хвіст", "плямиста шерсть", "гострі кігті"],
+                abilities: ["чудовий зір", "майстерність полювання", "стрибки на великі відстані"],
+                size: "medium",
+                type: "ссавець",
+                habitat: "ліс",
+                avatar: "🐆"
+            },
+            "Сова": {
+                traits: ["великі очі", "кругла голова", "гострий дзьоб", "міцні лапи"],
+                abilities: ["нічний зір", "безшумний політ", "обертання голови на 270°"],
+                size: "medium",
+                type: "птах",
+                habitat: "ліс",
+                avatar: "🦉"
+            },
+            "Ворон": {
+                traits: ["чорне пір'я", "гострий дзьоб", "круїлі ноги", "блискучі очі"],
+                abilities: ["інтелект", "здатність наслідувати звуки", "орієнтування в просторі"],
+                size: "small",
+                type: "птах", 
+                habitat: "всередовищі",
+                avatar: "🐦‍⬛"
+            },
+            "Змія": {
+                traits: ["довге тіло", "луската шкіра", "роздвоєний язик", "без повік"],
+                abilities: ["отруйні ікла", "інфрачервоний зір", "здатність відчувати вібрації"],
+                size: "medium",
+                type: "рептилія",
+                habitat: "різний",
+                avatar: "🐍"
+            },
+            "Ящірка": {
+                traits: ["луската шкіра", "довгий хвіст", "рухливе тіло", "кігтисті лапи"],
+                abilities: ["регенерація хвоста", "лазання по вертикалях", "зміна кольору"],
+                size: "small",
+                type: "рептилія",
+                habitat: "пустеля",
+                avatar: "🦎"
+            },
+            "Кажан": {
+                traits: ["крила", "великі вуха", "гострі ікла", "незвичайний ніс"],
+                abilities: ["ехолокація", "нічний спосіб життя", "полювання в польоті"],
+                size: "small",
+                type: "ссавець",
+                habitat: "печери",
+                avatar: "🦇"
+            },
+            "Павук": {
+                traits: ["багато очей", "довгі ноги", "челецери", "пухнасте тіло"],
+                abilities: ["плетіння павутини", "отрута", "чутливість до вібрацій"],
+                size: "small",
+                type: "членистоногі",
+                habitat: "всередовищі",
+                avatar: "🕷️"
+            }
+        };
+
+        // Другие данные для генерации
+        const personalities = [
+            "Цинічний", "Енергійний", "Апатичний", 
+            "Оптимістичний", "Егоїстичний", "Агресивний",
+            "Обережний", "Допитливий", "Відчайдушний", "Спокійний"
+        ];
+        
+        const names = [
+            "Марко", "Олег", "Юрій", "Андрій", "Сергій", 
+            "Іван", "Дмитро", "Олексій", "Богдан", "Роман",
+            "Наталя", "Оксана", "Катерина", "Марія", "Тетяна",
+            "Анна", "Ірина", "Софія", "Вікторія", "Ярина"
+        ];
+        
+        const surnames = [
+            "Коваль", "Шевченко", "Бондар", "Мельник", "Кравченко",
+            "Ткаченко", "Петренко", "Клименко", "Павленко", "Савченко",
+            "Гончар", "Білий", "Чорний", "Крутий", "Сірий"
+        ];
+        
+        const appearances = [
+            "зі шрамом через все обличчя",
+            "з сірою, пошарпаною шкірою",
+            "з блискучими очима, що світяться в темряві",
+            "з волоссям, що вицвіло від радіації",
+            "з потрісканими губами та грубою шкірою",
+            "з пронизливим поглядом та стертими рисами обличчя"
+        ];
+        
+        const shelters = [
+            "підвал старого будинку з захисними ґратами",
+            "металевий контейнер з системою вентиляції",
+            "підземне сховище з генератором",
+            "верхній поверх руїн з оглядовим майданчиком",
+            "печера з укріпленим входом",
+            "автобус, засипаний піском",
+            "старий бункер з очищувачем повітря",
+            "покинута фабрика з пастками для мутантів"
+        ];
+        
+        const bioProsthetics = [
+            "біомеханічна рука з інтегрованими інструментами",
+            "протез ока з інфрачервоним зором",
+            "кібернетична нога з підсилювачем стрибків",
+            "імплантований комунікатор у скроні",
+            "біопротез серця з енергетичним ядром",
+            "механічний хвіст-стабілізатор",
+            "вбудований сканер радіації в передпліччі",
+            "кібернетичні легені з фільтром токсинів",
+            "протез з вбудованим медичним сканером",
+            "біомеханічне око з функцією запису"
+        ];
+
+        // Логика создания гибридов
+        function createHybrid() {
+            const animalNames = Object.keys(animals);
+            let animal1, animal2;
+            
+            // 70% chance для логичной комбинации, 30% для случайной
+            if (Math.random() < 0.7) {
+                // Логичные комбинации по типу, размеру или среде обитания
+                const animal1Name = animalNames[Math.floor(Math.random() * animalNames.length)];
+                animal1 = animals[animal1Name];
+                
+                // Находим логичного партнера
+                const compatibleAnimals = animalNames.filter(name => {
+                    const animal = animals[name];
+                    return (
+                        animal.type === animal1.type || 
+                        animal.habitat === animal1.habitat ||
+                        animal.size === animal1.size
+                    ) && name !== animal1Name;
+                });
+                
+                if (compatibleAnimals.length > 0) {
+                    const animal2Name = compatibleAnimals[Math.floor(Math.random() * compatibleAnimals.length)];
+                    animal2 = animals[animal2Name];
+                } else {
+                    // Если нет логичных партнеров, берем случайного
+                    const animal2Name = animalNames.filter(name => name !== animal1Name)[Math.floor(Math.random() * (animalNames.length - 1))];
+                    animal2 = animals[animal2Name];
+                }
+            } else {
+                // Случайная комбинация
+                const animal1Name = animalNames[Math.floor(Math.random() * animalNames.length)];
+                animal1 = animals[animal1Name];
+                const animal2Name = animalNames.filter(name => name !== animal1Name)[Math.floor(Math.random() * (animalNames.length - 1))];
+                animal2 = animals[animal2Name];
+            }
+            
+            return { animal1: { name: Object.keys(animals).find(key => animals[key] === animal1), ...animal1 }, 
+                     animal2: { name: Object.keys(animals).find(key => animals[key] === animal2), ...animal2 } };
+        }
+
+        // Функция генерации случайного персонажа
+        function generateCharacter() {
+            // Генерация гибрида
+            const hybrid = createHybrid();
+            const animal1 = hybrid.animal1;
+            const animal2 = hybrid.animal2;
+            
+            // Генерация остальных характеристик
+            const personality = personalities[Math.floor(Math.random() * personalities.length)];
+            const number = Math.floor(Math.random() * 4) + 2; // Число от 2 до 5
+            const name = names[Math.floor(Math.random() * names.length)];
+            const surname = surnames[Math.floor(Math.random() * surnames.length)];
+            const appearance = appearances[Math.floor(Math.random() * appearances.length)];
+            const shelter = shelters[Math.floor(Math.random() * shelters.length)];
+            const bioProsthetic = bioProsthetics[Math.floor(Math.random() * bioProsthetics.length)];
+            
+            // Генерация описания гибрида
+            const hybridDescription = generateHybridDescription(animal1, animal2);
+            
+            // Генерация способностей гибрида
+            const hybridAbilities = generateHybridAbilities(animal1, animal2);
+            
+            // Определение типа навыков на основе числа
+            let skillType, skillDescription;
+            if (number >= 4) {
+                skillType = "ВИНАХІДЛИВІСТЬ";
+                skillDescription = "Ви маєте талант до ремонту техніки, торгівлі та пошуку корисних ресурсів серед руїн.";
+            } else {
+                skillType = "ФІЗИЧНІ НАВИЧКИ";
+                skillDescription = "Ви сильні, витривалі та вправні у полюванні та самозахисті.";
+            }
+            
+            // Определение типа гибрида
+            const hybridType = determineHybridType(animal1, animal2);
+            
+            // Формирование карточки персонажа
+            const characterCard = document.getElementById('characterCard');
+            characterCard.innerHTML = `
+                <div class="character-header">
+                    <div class="character-avatar">${animal1.avatar}</div>
+                    <div>
+                        <div class="character-name">${name} ${surname} <span class="hybrid-type">${hybridType}</span></div>
+                        <div class="character-mutation">Гібрид ${animal1.name} + ${animal2.name}</div>
+                    </div>
+                </div>
+                
+                <div class="hybrid-description">${hybridDescription}</div>
+                
+                <div class="stat">
+                    <span>Характер:</span>
+                    <span class="stat-value">${personality}</span>
+                </div>
+                
+                <div class="stat">
+                    <span>Число навички:</span>
+                    <span class="stat-value">${number}</span>
+                </div>
+                
+                <div class="stat">
+                    <span>Тип навички:</span>
+                    <span class="stat-value">${skillType}</span>
+                </div>
+                
+                <div class="stat">
+                    <span>Зовнішність:</span>
+                    <span class="stat-value">${appearance}</span>
+                </div>
+                
+                <div class="stat">
+                    <span>Біопротез:</span>
+                    <span class="bio-prosthetic">${bioProsthetic}</span>
+                </div>
+                
+                <div class="stat">
+                    <span>Укриття:</span>
+                    <span class="stat-value">${shelter}</span>
+                </div>
+                
+                <div>
+                    <span class="highlight">Спеціальні здібності:</span>
+                    <ul class="abilities-list">
+                        ${hybridAbilities.map(ability => `<li>${ability}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="skill-info">
+                    <p>${skillDescription}</p>
+                    <p><span class="highlight">Кидки навичок:</span> Для ${skillType.toLowerCase()} потрібен результат ${number >= 4 ? "нижче" : "вище"} за ваше число (${number})</p>
+                </div>
+            `;
+            
+            // Генерация промпта для изображения
+            generateImagePrompt(name, surname, animal1, animal2, hybridDescription, appearance, bioProsthetic, shelter, hybridType);
+            
+            // Показываем контейнер с промптом
+            document.getElementById('promptContainer').style.display = 'block';
+        }
+
+        // Генерация описания гибрида
+        function generateHybridDescription(animal1, animal2) {
+            const descriptions = [
+                `${animal1.name} та ${animal2.name} створили унікального гібрида, що поєднує ${animal1.traits[0]} та ${animal2.traits[1]}.`,
+                `Цей гібрид успадкував ${animal1.traits[1]} від ${animal1.name} та ${animal2.traits[0]} від ${animal2.name}.`,
+                `Поєднання ${animal1.name} та ${animal2.name} дало початок новій формі життя з ${animal1.traits[2]} та ${animal2.traits[2]}.`,
+                `Мутація об'єднала ${animal1.name} та ${animal2.name}, створивши істоту з ${animal1.traits[3]} та ${animal2.traits[3]}.`
+            ];
+            
+            return descriptions[Math.floor(Math.random() * descriptions.length)];
+        }
+
+        // Генерация способностей гибрида
+        function generateHybridAbilities(animal1, animal2) {
+            const abilities = [];
+            
+            // Берем по 2 способности от каждого животного
+            const a1Abilities = [...animal1.abilities].sort(() => 0.5 - Math.random()).slice(0, 2);
+            const a2Abilities = [...animal2.abilities].sort(() => 0.5 - Math.random()).slice(0, 2);
+            
+            abilities.push(...a1Abilities, ...a2Abilities);
+            
+            // 30% шанс на уникальную способность гибрида
+            if (Math.random() < 0.3) {
+                const uniqueAbilities = [
+                    "комбінована атака",
+                    "покращена регенерація",
+                    "радіоактивний імунітет", 
+                    "емпатія до тварин",
+                    "контроль над рослинами",
+                    "телепатичний зв'язок"
+                ];
+                abilities.push(uniqueAbilities[Math.floor(Math.random() * uniqueAbilities.length)]);
+            }
+            
+            return abilities;
+        }
+
+        // Определение типа гибрида
+        function determineHybridType(animal1, animal2) {
+            if (animal1.type === animal2.type) {
+                return animal1.type === "ссавець" ? "Земноводний" : 
+                       animal1.type === "птах" ? "Крилатий" : 
+                       animal1.type === "рептилія" ? "Плазун" : "Гібрид";
+            }
+            
+            const typeCombinations = {
+                "ссавець+птах": "Крилатий звір",
+                "ссавець+рептилія": "Лускатий звір", 
+                "птах+рептилія": "Драконоподібний",
+                "птах+членистоногі": "Комахо-птах",
+                "рептилія+членистоногі": "Отруйний плазун"
+            };
+            
+            const combination = [animal1.type, animal2.type].sort().join("+");
+            return typeCombinations[combination] || "Унікальний гібрид";
+        }
+
+        // Функция генерации промпта для изображения
+        function generateImagePrompt(name, surname, animal1, animal2, hybridDescription, appearance, bioProsthetic, shelter, hybridType) {
+            const prompt = `Зображення для RPG Wasteland Crossing:
+            
+Персонаж: ${name} ${surname}, ${hybridType} гібрид ${animal1.name} та ${animal2.name}
+Опис: ${hybridDescription}
+Зовнішність: ${appearance}, ${bioProsthetic}
+Укриття: ${shelter}
+
+Стиль: детальний цифровий арт, постапокаліптичний сеттінг, похмурі кольори, високоякісне зображення, кінематографічне освітлення
+
+Додаткові деталі: мутант-гібрид тварин, біомеханічні протези, руїни цивілізації, радіаційний туман, виживання в пустелі
+
+Співвідношення сторін: 16:9, високоякісне зображення 4K`;
+
+            document.getElementById('imagePrompt').textContent = prompt;
+        }
+        
+        // Функция копирования промпта
+        function copyPrompt() {
+            const promptText = document.getElementById('imagePrompt').textContent;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Скопійовано!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+        
+        // Генерация персонажа при загрузке страницы
+        window.onload = generateCharacter;
+    </script>
+</body>
+</html>
